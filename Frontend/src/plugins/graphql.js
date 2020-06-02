@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import ApolloClient, { ApolloCliente } from 'apollo-client'
+import ApolloClient from 'apollo-client'
 import { createHttpLink } from 'apollo-link-http'
 import { setContext } from 'apollo-link-context'
 import { InMemoryCache } from 'apollo-cache-inmemory'
@@ -9,7 +9,7 @@ Vue.use({
     const httpLink = createHttpLink({
       uri: 'http://localhost:4000/'
     })
-    const authLink = setContext((_, { header }) => {
+    const authLink = setContext((_, { headers }) => {
       const token = localStorage.getItem('token')
       return {
         headers: {

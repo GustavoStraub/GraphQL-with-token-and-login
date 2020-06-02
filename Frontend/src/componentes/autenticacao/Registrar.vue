@@ -42,6 +42,7 @@
 
 <script>
 import Erros from '../comum/Erros'
+import gql from 'graphql-tag'
 
 export default {
     components: { Erros },
@@ -55,12 +56,41 @@ export default {
     computed: {
         perfis() {
             return this.dados && this.dados.perfis &&
-                this.dados.perfis.map(p => p.nome).join(',')
+                this.dados.perfis.map(p => p.rotulo).join(',')
         }
     },
     methods: {
         registrar() {
-            // implementar
+            this.$api.mutate({
+                mutation: gql`
+                mutation (
+                    $nome: String!
+                    $email: String!
+                    $senha: String!
+                ){
+                    registrarUsuario(
+                        dados: {
+                            nome: $nome
+                            email: $email
+                            senha: $senha
+                        }
+                    ) {
+                        id nome email perfis {rotulo}
+                    }
+                }
+                `,
+                variables: {
+                    nome : this.usuario.nome,
+                    email : this.usuario.email,
+                    senha: this.usuario.senha,
+                }
+            }).then(res => {
+                this.dados = res.data.registrarUsuario
+                this.usuario = {}
+                this.erros = null
+            }).catch(e => {
+                this.erros = e
+            })
         }
     }
 }
